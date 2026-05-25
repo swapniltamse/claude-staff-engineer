@@ -23,21 +23,53 @@ None of this shows up until your Change Failure Rate climbs, postmortems multipl
 
 ## What this pack installs
 
-Skills that encode what a Staff Engineer does before writing code.
+Skills organized by the DORA metric they protect.
 
-| Skill | What it enforces |
+### Deployment Frequency
+
+> How often you ship to production. The goal is multiple times per day. The enemy is large batches, flaky CI, and long-lived branches.
+
+| Skill | What it does |
 |---|---|
-| `staff-architect` | Discovery pass + Architecture Decision Record before any code |
-| `surgical-strike` | Hard 3-file blast-radius limit, DORA-justified |
-| `dependency-audit` | License, CVE, maintenance health check before any install |
-| `migration-sentinel` | Lock analysis, down-migration, dual-write gate for schema changes |
-| `no-new-abstraction` | Rule of Three — 3 real call sites before any new abstraction |
-| `observability-gate` | Blocks completion without a log, a metric, and an alert stub |
-| `ownership-chain` | Forces team owner, runbook, and on-call rotation on new code |
-| `rfc-gate` | Triggers a written proposal for high-blast-radius changes |
-| `postmortem-check` | Scans for incident annotations before touching any file |
-| `breaking-change-detector` | Catches API/interface breaks and requires a migration path |
-| `/exec-summary` | Slash command: executive PR summary with honest debt assessment |
+| `surgical-strike` | Hard 3-file limit per change — forces small, shippable slices |
+| `no-new-abstraction` | Rule of Three — blocks premature abstractions that balloon PR size |
+| `flaky-test-detector` | Catches flakiness patterns before they make CI untrustworthy |
+| `feature-flag-gate` | Dark launch behind a flag so code ships decoupled from release |
+
+### Lead Time for Change
+
+> Time from first commit to production. The enemy is big PRs, unclear reviews, architectural confusion, and coupling that makes every task touch ten files.
+
+| Skill | What it does |
+|---|---|
+| `staff-architect` | Discovery pass + ADR so reviewers understand the plan immediately |
+| `rfc-gate` | Triggers a written proposal before high-complexity work begins |
+| `breaking-change-detector` | Catches API breaks early before they stall review with migration debates |
+| `change-coupling-detector` | Surfaces files that always change together — hidden tax on every PR |
+
+### Change Failure Rate
+
+> Percentage of deployments that cause a production failure. The enemy is large changesets, no tests, untested rollbacks, and skipped incident warnings.
+
+| Skill | What it does |
+|---|---|
+| `surgical-strike` | 3-file limit directly reduces CFR — smaller changes fail less |
+| `migration-sentinel` | Lock analysis, dual-write gate, down-migration required for schema changes |
+| `postmortem-check` | Reads incident annotations before touching files — prevents repeat outages |
+| `test-coverage-gate` | Blocks shipping when coverage drops in changed files |
+| `dependency-audit` | CVE and license check before any new package enters the codebase |
+
+### Mean Time to Restore
+
+> How long to recover when something breaks. The enemy is no observability, no runbook, no feature flag to turn things off, and no one who knows what the code does.
+
+| Skill | What it does |
+|---|---|
+| `observability-gate` | Requires a log, a metric, and an alert stub before a feature ships |
+| `ownership-chain` | Forces team owner, runbook, and on-call rotation on every new module |
+| `feature-flag-gate` | Kill switch available in seconds, no deployment needed |
+| `deployment-checklist` | Rollback plan required and tested before merge |
+| `/exec-summary` | Rollback plan in every PR summary, written for the person managing the incident |
 
 ---
 
@@ -51,91 +83,103 @@ Claude Code picks up skills from `.claude/skills/` automatically.
 
 ---
 
-## The DORA connection
+## The DORA score
 
-Four metrics tell you whether your deployment pipeline is working or not. Every skill in this pack maps to at least one.
+`staff-architect` scores every proposed change against all four metrics before implementation begins.
 
 ```
-Deployment Frequency    ← surgical-strike, no-new-abstraction
-Lead Time for Change    ← staff-architect, rfc-gate, breaking-change-detector
+Deployment Frequency    ← surgical-strike, no-new-abstraction, flaky-test-detector
+Lead Time for Change    ← staff-architect, rfc-gate, change-coupling-detector
 Change Failure Rate     ← surgical-strike, migration-sentinel, postmortem-check
-Mean Time to Restore    ← observability-gate, ownership-chain, exec-summary
+Mean Time to Restore    ← observability-gate, ownership-chain, deployment-checklist
 ```
 
-`staff-architect` scores every proposed change against all four before implementation begins. GREEN / YELLOW / RED before a single line is written.
+GREEN / YELLOW / RED before a single line is written.
 
 ---
 
-## Skill highlights
+## What DORA degradation actually looks like
 
-### `staff-architect`: plan before you build
-
-Runs a full codebase discovery pass before any code is written, outputs a Strategic Architecture Decision Record covering what already exists, what the change will cost, and what could go wrong, and blocks code generation until you approve the plan. Ends with a DORA Impact Score.
+Most teams do not notice their metrics slipping until it is a problem. Here is what the decline looks like in practice, and which skill addresses each pattern.
 
 ---
 
-### `surgical-strike`: 3 files, then it stops
+**"Our PRs keep getting bigger and reviews are taking longer."**
 
-Change size is the strongest predictor of deployment failures. If your request requires touching 4+ files, the agent stops, explains the CFR risk, and presents scoped options. It does not start and ask partway through.
+This is Lead Time for Change degrading. Common causes: agents that touch too many files per change, coupling between files that forces co-changes, premature abstractions that require updates everywhere.
 
----
-
-### `migration-sentinel`: databases are not reversible
-
-Before any schema change ships:
-
-- Lock duration estimated at current table size
-- Down-migration required or change is blocked
-- Dual-write strategy required for destructive operations
-- Data integrity verification query included
-
-`DROP TABLE` with no dual-write plan is a hard block.
+Skills: `surgical-strike`, `change-coupling-detector`, `no-new-abstraction`
 
 ---
 
-### `postmortem-check`: read the warnings before you touch anything
+**"CI is a coin flip. We're re-running builds constantly."**
 
-Scans every file being modified for:
+This is Deployment Frequency degrading. Flaky tests erode confidence in the pipeline. When engineers learn that red builds are probably nothing, they stop treating red builds as a signal. That is when real failures start slipping through.
 
-- `// INCIDENT:` and `// POSTMORTEM:` annotations
-- `// DO NOT CHANGE` and `// WARNING:` comments
-- Any comment mentioning outage, deadlock, race condition, or timeout in a warning context
-
-If an annotation directly constrains the change, the agent stops and asks for confirmation before proceeding.
-
-The worst incidents are the ones that have already happened once.
+Skill: `flaky-test-detector`
 
 ---
 
-### `no-new-abstraction`: earn it first
+**"We had an incident and nobody knew who to call or what the runbook was."**
 
-A new interface, base class, or shared utility requires three existing, real call sites. Not hypothetical ones.
+This is MTTR degrading. New code shipped without an owner, without monitoring, and without a runbook. The feature worked fine until it did not, at which point nobody knew what it did or who to wake up.
 
-If the rule of three is not met, the agent implements inline and leaves a comment marking the extraction point for when the third real use case arrives.
-
----
-
-### `observability-gate`: if it can't be observed, it isn't done
-
-Every feature ships with:
-
-1. One structured log line at a meaningful event boundary
-2. One named metric with labels
-3. One alert condition stub (even if not yet wired to paging)
-
-Missing any one of the three, the feature is not complete.
+Skills: `ownership-chain`, `observability-gate`
 
 ---
 
-### `/exec-summary`: PR summaries worth reading
+**"We keep having the same incident. Different PR, same root cause."**
 
-Slash command. Generates a summary with three sections that most PR descriptions skip:
+This is CFR degrading from institutional memory loss. Engineers leave. Context goes with them. The `// INCIDENT:` comment in the code is the only thing standing between the next PR and a repeat of that postmortem, and agents ignore those comments by default.
 
-- Business Value — what metric moves, for which users, by how much
-- Technical Debt Impact (Honest Assessment) — required to contain at least one non-positive finding
-- Rollback Plan — exact steps, time to safe, data risk
+Skill: `postmortem-check`
 
-Written for VPs of Engineering and finance stakeholders, not the engineer who wrote the code.
+---
+
+**"A schema migration locked our database for 45 minutes."**
+
+This is CFR degrading from missing process around irreversible operations. Nobody checked the table size. Nobody had a dual-write plan. Nobody tested the rollback.
+
+Skill: `migration-sentinel`
+
+---
+
+**"We shipped a breaking API change and three teams were blocked."**
+
+This is Lead Time and CFR degrading together. A change that breaks consumers creates an unplanned coordination event: the breaking team has to help every affected team migrate before anything can move forward.
+
+Skill: `breaking-change-detector`
+
+---
+
+**"We can't roll back. The only option is forward."**
+
+This is MTTR degrading at the worst possible time. No feature flag. No tested rollback. A change that touched the database. The on-call's options are "fix it fast" or "wait."
+
+Skills: `feature-flag-gate`, `deployment-checklist`, `migration-sentinel`
+
+---
+
+## Skill reference
+
+| Skill | DORA metric | Trigger |
+|---|---|---|
+| `staff-architect` | Lead Time | Any new feature or component |
+| `surgical-strike` | Deployment Frequency, CFR | Every code change |
+| `dependency-audit` | CFR | Any new package install |
+| `migration-sentinel` | CFR, MTTR | Any schema change |
+| `no-new-abstraction` | Deployment Frequency | New interface, base class, shared utility |
+| `observability-gate` | MTTR | Before any feature is marked complete |
+| `ownership-chain` | MTTR | New service, module, or endpoint |
+| `rfc-gate` | Lead Time | High blast-radius changes |
+| `postmortem-check` | CFR | Before modifying any existing file |
+| `breaking-change-detector` | Lead Time, CFR | Any public API or interface change |
+| `feature-flag-gate` | Deployment Frequency, MTTR | Any user-facing change |
+| `test-coverage-gate` | CFR | Before any implementation is complete |
+| `deployment-checklist` | CFR, MTTR | Before any merge or deploy |
+| `flaky-test-detector` | Deployment Frequency | Before creating a PR |
+| `change-coupling-detector` | Lead Time | When modifying frequently co-changed files |
+| `/exec-summary` | MTTR | Slash command — any time |
 
 ---
 
