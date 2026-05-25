@@ -25,6 +25,36 @@ None of this shows up until your Change Failure Rate climbs, postmortems multipl
 
 ---
 
+## What this looks like in practice
+
+**Without claude-staff-engineer**
+
+```
+You: Fix the retry logic in payments/retry.py
+
+Agent: Done. I updated the backoff calculation,
+refactored the error handler, and simplified the
+timeout constants across 6 files.
+```
+
+**With claude-staff-engineer**
+
+```
+You: Fix the retry logic in payments/retry.py
+
+Agent: Before touching this file — found an incident
+annotation: // INCIDENT-2022: DO NOT FLATTEN THIS BACKOFF
+
+This comment constrains the change. Do you want me to
+explain the constraint, work around it, or stop here?
+```
+
+The agent reads the warning. It stops. It asks.
+
+That is the difference between a tool that generates code and one that understands why certain code was written the way it was.
+
+---
+
 ## This will not blow up your context window or your bill
 
 The first question every senior engineer asks: "If I add 16 skills, does every prompt now cost $5?"
