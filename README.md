@@ -141,11 +141,52 @@ Generates Business Value, an honest Technical Debt Assessment, and a Rollback Pl
 
 ## Install
 
+If you don't have an existing `.claude` folder:
+
 ```bash
 cp -r .claude /path/to/your/project/
 ```
 
+If you already use Claude Code and have your own `.claude` config, use rsync to merge skills without overwriting your existing setup:
+
+```bash
+rsync -av .claude/skills/ /path/to/your/project/.claude/skills/
+```
+
 Claude Code picks up skills from `.claude/skills/` automatically.
+
+---
+
+## Progressive enablement
+
+16 skills sounds like a lot. It is not a recommendation to enable all of them on day one.
+
+Each skill only activates when its trigger condition is met — they don't run in parallel on every prompt. But if you want to start lean, here is the recommended rollout:
+
+**Week 1 — baseline governance**
+
+Start with three skills that cover the highest-impact failure modes without adding friction to routine work:
+
+| Skill | Why start here |
+|---|---|
+| `staff-architect` | Catches the biggest architectural mistakes before any code is written |
+| `surgical-strike` | Protects deployment health on every single change |
+| `exec-summary` | Gives your team a PR summary format that leadership can actually use |
+
+**Week 2-3 — add gates for your risk surface**
+
+Add skills based on what your team actually ships:
+
+- Touching databases regularly? Add `migration-sentinel`.
+- Shipping user-facing features? Add `feature-flag-gate`.
+- Inherited a codebase with incident history? Add `postmortem-check`.
+- Maintaining a public API or shared library? Add `breaking-change-detector`.
+
+**Later — fill the remaining gaps**
+
+Add `observability-gate`, `ownership-chain`, `test-coverage-gate`, and others as your team's discipline matures. These are high-value but require more setup to integrate cleanly.
+
+The skills that cost you nothing to add immediately: `postmortem-check`, `flaky-test-detector`, and `no-new-abstraction`. They run fast, block nothing, and surface problems that are otherwise invisible.
 
 ---
 
