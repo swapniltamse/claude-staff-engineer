@@ -274,6 +274,12 @@ How long it takes to recover when something breaks. The enemy is no observabilit
 
 ---
 
+## Built by
+
+[Swapnil Tamse](https://www.linkedin.com/in/swapniltamse) — Engineering Leader, AI/AI Security, NYC
+
+---
+
 ## Contributing
 
 Each skill encodes a specific opinion about how good engineering teams work. If your team has a constraint that belongs here — test coverage floors, API contract enforcement, feature flag requirements — open a PR. The format is in each `SKILL.md` file.
@@ -282,4 +288,4 @@ Each skill encodes a specific opinion about how good engineering teams work. If 
 
 ## License
 
-MIT
+Apache 2.0 — free to use and modify. Copyright notices and attribution must be preserved in derivative works.
