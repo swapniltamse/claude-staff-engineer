@@ -1,11 +1,10 @@
 # claude-staff-engineer
 
-> **A Claude Code skill pack that installs Staff Engineer judgment into your AI agent.**
-> Stop vibe coding from destroying your DORA metrics.
+Stop your AI agent from writing code it should not write.
 
 ---
 
-## The Problem in One Sentence
+## The problem
 
 AI agents are great at generating code. They are terrible at knowing when not to.
 
@@ -18,15 +17,15 @@ Left unconstrained, your agent will:
 - Add a dependency without checking its license or CVE history
 - Silently blow past a `// DO NOT CHANGE — caused outage 2023` comment
 
-None of this shows up until your Change Failure Rate climbs, your postmortems multiply, and your senior engineers spend their sprints unwinding what the agent shipped last week.
+None of this shows up until your Change Failure Rate climbs, postmortems multiply, and your senior engineers spend their sprints unwinding what the agent shipped last week.
 
 ---
 
-## What This Pack Installs
+## What this pack installs
 
-Eight skills that encode what a Staff Engineer does before writing code.
+Skills that encode what a Staff Engineer does before writing code.
 
-| Skill | What It Enforces |
+| Skill | What it enforces |
 |---|---|
 | `staff-architect` | Discovery pass + Architecture Decision Record before any code |
 | `surgical-strike` | Hard 3-file blast-radius limit, DORA-justified |
@@ -48,13 +47,13 @@ Eight skills that encode what a Staff Engineer does before writing code.
 cp -r .claude /path/to/your/project/
 ```
 
-Claude Code picks up skills from `.claude/skills/` automatically. Done.
+Claude Code picks up skills from `.claude/skills/` automatically.
 
 ---
 
-## The DORA Connection
+## The DORA connection
 
-These four metrics separate elite engineering teams from everyone else. Every skill in this pack maps to at least one of them.
+Four metrics tell you whether your deployment pipeline is working or not. Every skill in this pack maps to at least one.
 
 ```
 Deployment Frequency    ← surgical-strike, no-new-abstraction
@@ -63,29 +62,25 @@ Change Failure Rate     ← surgical-strike, migration-sentinel, postmortem-chec
 Mean Time to Restore    ← observability-gate, ownership-chain, exec-summary
 ```
 
-The `staff-architect` skill scores every proposed change against all four metrics before implementation begins. You get a GREEN / YELLOW / RED rating before a single line is written.
+`staff-architect` scores every proposed change against all four before implementation begins. GREEN / YELLOW / RED before a single line is written.
 
 ---
 
-## Skill Highlights
+## Skill highlights
 
-### `staff-architect` — Plan Before You Build
+### `staff-architect`: plan before you build
 
-Runs a full codebase discovery pass before any code is written. Outputs a **Strategic Architecture Decision Record** covering what already exists, what the change will cost, and what could go wrong. Ends with a DORA Impact Score.
-
-**Code is blocked until you approve the plan.**
+Runs a full codebase discovery pass before any code is written, outputs a Strategic Architecture Decision Record covering what already exists, what the change will cost, and what could go wrong, and blocks code generation until you approve the plan. Ends with a DORA Impact Score.
 
 ---
 
-### `surgical-strike` — 3 Files. Hard Stop.
+### `surgical-strike`: 3 files, then it stops
 
-The research is clear: change size is the strongest predictor of deployment failures.
-
-If your request requires touching 4+ files, the agent stops, cites the CFR risk, and presents three scoped options. It does not start and ask partway through.
+Change size is the strongest predictor of deployment failures. If your request requires touching 4+ files, the agent stops, explains the CFR risk, and presents scoped options. It does not start and ask partway through.
 
 ---
 
-### `migration-sentinel` — Databases Are Not Reversible
+### `migration-sentinel`: databases are not reversible
 
 Before any schema change ships:
 
@@ -98,7 +93,7 @@ Before any schema change ships:
 
 ---
 
-### `postmortem-check` — Read the Warnings Before You Touch Anything
+### `postmortem-check`: read the warnings before you touch anything
 
 Scans every file being modified for:
 
@@ -106,13 +101,13 @@ Scans every file being modified for:
 - `// DO NOT CHANGE` and `// WARNING:` comments
 - Any comment mentioning outage, deadlock, race condition, or timeout in a warning context
 
-If an annotation directly constrains the change, the agent stops and asks for explicit confirmation before proceeding.
+If an annotation directly constrains the change, the agent stops and asks for confirmation before proceeding.
 
-**The worst incidents are the ones that have happened before.**
+The worst incidents are the ones that have already happened once.
 
 ---
 
-### `no-new-abstraction` — Earn the Abstraction
+### `no-new-abstraction`: earn it first
 
 A new interface, base class, or shared utility requires three existing, real call sites. Not hypothetical ones.
 
@@ -120,7 +115,7 @@ If the rule of three is not met, the agent implements inline and leaves a commen
 
 ---
 
-### `observability-gate` — If It Can't Be Observed, It Isn't Done
+### `observability-gate`: if it can't be observed, it isn't done
 
 Every feature ships with:
 
@@ -128,35 +123,33 @@ Every feature ships with:
 2. One named metric with labels
 3. One alert condition stub (even if not yet wired to paging)
 
-Missing any one of the three: the feature is not complete.
+Missing any one of the three, the feature is not complete.
 
 ---
 
-### `/exec-summary` — PR Summaries That Executives Actually Use
+### `/exec-summary`: PR summaries worth reading
 
-Slash command. Generates a PR summary with three sections that most PR descriptions skip:
+Slash command. Generates a summary with three sections that most PR descriptions skip:
 
-- **Business Value** — what metric moves, for which users, by how much
-- **Technical Debt Impact (Honest Assessment)** — required to contain at least one non-positive finding
-- **Rollback Plan** — exact steps, time to safe, data risk
+- Business Value — what metric moves, for which users, by how much
+- Technical Debt Impact (Honest Assessment) — required to contain at least one non-positive finding
+- Rollback Plan — exact steps, time to safe, data risk
 
-Formatted for VPs of Engineering and finance stakeholders, not for the engineer who wrote the code.
-
----
-
-## Who This Is For
-
-**VPs of Engineering** evaluating AI coding tools for team rollout. If your concern is that AI will help juniors ship faster while making the codebase harder for seniors to maintain, this pack addresses that directly. Every skill encodes a constraint that senior engineers apply automatically.
-
-**Staff and Principal Engineers** who are being asked to review AI-generated code. Use this pack to hold the agent to the same bar you hold your teammates to.
-
-**Engineering Managers** whose DORA metrics have slipped since adopting AI coding assistants. This is a structural fix, not a process mandate.
-
-**Hiring Managers** building teams where AI assistance is standard. The skills here encode the judgment gap between junior and senior engineers. They are a forcing function, not a replacement.
+Written for VPs of Engineering and finance stakeholders, not the engineer who wrote the code.
 
 ---
 
-## The Hidden Cost of Vibe Coding
+## Who this is for
+
+If you are a **VP of Engineering** evaluating AI coding tools, the concern is usually the same: juniors ship faster but the codebase gets harder for seniors to navigate. Every skill here encodes a check that senior engineers run automatically. It is a structural fix, not a policy doc.
+
+If you are a **Staff or Principal Engineer** reviewing AI-generated code, use this pack to hold the agent to the same bar you hold your teammates to.
+
+If you are an **Engineering Manager** whose DORA metrics started slipping after AI adoption, this is the answer. A process mandate does not work. A skill that runs before code is written does.
+
+---
+
+## The hidden cost of vibe coding
 
 Vibe coding ships fast. The cost shows up six months later.
 
@@ -166,15 +159,15 @@ Vibe coding ships fast. The cost shows up six months later.
 - On-call incidents with no runbook because the feature shipped without an owner
 - Incidents re-opened because the agent edited around a `// INCIDENT:` comment it never read
 
-These are not hypothetical failure modes. They are the recurring postmortem themes at every organization that adopted AI coding at speed without installing guardrails.
+These are not hypothetical. They are the recurring postmortem themes at organizations that adopted AI coding at speed and dealt with the consequences later.
 
-This pack is the guardrails.
+This pack exists for after you have read one too many of those postmortems.
 
 ---
 
 ## Contributing
 
-Each skill encodes a specific opinion about how elite engineering teams work. If your team has a constraint that belongs here — test coverage floors, API contract enforcement, feature flag requirements — open a PR. The format is in each `SKILL.md` file.
+Each skill encodes a specific opinion about how good engineering teams work. If your team has a constraint that belongs here — test coverage floors, API contract enforcement, feature flag requirements — open a PR. The format is in each `SKILL.md` file.
 
 ---
 
