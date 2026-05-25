@@ -1,105 +1,180 @@
 # claude-staff-engineer
 
-A Claude Code skill pack for engineering teams that care about DORA metrics, code quality, and the long-term cost of moving fast.
+> **A Claude Code skill pack that installs Staff Engineer judgment into your AI agent.**
+> Stop vibe coding from destroying your DORA metrics.
 
 ---
 
-## The Problem with Vibe Coding at Scale
+## The Problem in One Sentence
 
-AI coding assistants are remarkably good at producing working code. They are remarkably bad at knowing when not to.
+AI agents are great at generating code. They are terrible at knowing when not to.
 
-Left unconstrained, an AI agent will:
+Left unconstrained, your agent will:
 
-- Create a new utility when three already exist in the codebase
-- Touch twelve files to implement a two-line fix
-- Ship a PR with no rollback plan and no honest assessment of the debt it creates
-- Generate code that works today and costs you a week of cleanup six months from now
+- Create a new utility when three already exist
+- Touch 12 files to fix a 2-line bug
+- Ship with no rollback plan and no alert coverage
+- Generate a new abstraction for every pattern it sees
+- Add a dependency without checking its license or CVE history
+- Silently blow past a `// DO NOT CHANGE — caused outage 2023` comment
 
-This is not a complaint about AI. It is a description of what happens when a powerful code-generation tool operates without the judgment a senior engineer would apply. The tool does not know about your DORA metrics. It does not feel the pain when your Change Failure Rate climbs. It does not sit in the postmortem.
-
-You need to install that judgment as a skill pack.
-
----
-
-## What This Pack Does
-
-`claude-staff-engineer` gives Claude three behavioral constraints drawn from how Staff and Principal Engineers actually work:
-
-**staff-architect** forces discovery before creation. Before any code is written, Claude searches the workspace for existing utilities, audits the blast radius of the proposed change, and produces a written Architecture Decision Record covering what was found, what it will cost, and what could go wrong. Code generation is blocked until you approve the plan.
-
-**surgical-strike** enforces a hard limit of 3 files per change. This is not a style preference. It is a DORA-aligned constraint. The research on elite engineering teams is consistent: smaller changesets ship faster, fail less often, and recover faster when they do fail. If a request exceeds the limit, Claude stops, explains the deployment risk in terms of Change Failure Rate and Lead Time for Change, and presents scoped options before touching anything.
-
-**exec-summary** produces an executive-grade PR summary on demand via `/exec-summary`. It covers Business Value, an honest Technical Debt assessment (the section most PR descriptions skip), and a concrete Rollback Plan. Formatted for VPs of Engineering and finance stakeholders, not for the engineer who wrote the code.
+None of this shows up until your Change Failure Rate climbs, your postmortems multiply, and your senior engineers spend their sprints unwinding what the agent shipped last week.
 
 ---
 
-## Why DORA Metrics Are the Right Frame
+## What This Pack Installs
 
-The DORA research program has tracked engineering team performance across thousands of organizations for over a decade. The four key metrics (Deployment Frequency, Lead Time for Change, Change Failure Rate, and Mean Time to Restore) are the most validated framework for distinguishing elite teams from average ones.
+Eight skills that encode what a Staff Engineer does before writing code.
 
-The hidden cost of unconstrained AI coding shows up directly in these numbers:
-
-**Change Failure Rate** increases when changesets are large, discovery is skipped, and rollback plans are absent. An AI that touches ten files to implement a feature is generating CFR risk with every keystroke.
-
-**Lead Time for Change** increases when code review is harder because the diff is sprawling, when test coverage is unclear, and when reviewers cannot quickly understand what changed and why.
-
-**Mean Time to Restore** increases when there is no rollback plan, when changes touch shared infrastructure, and when the on-call engineer cannot determine which of the twelve modified files caused the incident.
-
-**Deployment Frequency** decreases when teams lose confidence in their pipeline because recent AI-assisted changes caused incidents. The team slows down to compensate for a trust deficit the tooling created.
-
-This pack addresses each of these failure modes directly.
-
----
-
-## The Hidden Cost of Code Bloat
-
-Every net-new file is a file someone will read, maintain, debug, and eventually delete. Every duplicated utility is a divergence point waiting to cause a bug. Every abstraction created for a single call site is complexity the next engineer has to navigate before they can make their change.
-
-Senior engineers develop an instinct for this cost over years of postmortems and refactors. They reach for existing code before writing new code. They ask "is this really a new concept, or is it the same concept wearing different clothes?" They know the codebase well enough to know what already exists.
-
-AI agents do not have this instinct by default. They are trained to complete tasks, not to protect codebases. The `staff-architect` skill installs the discovery discipline that a senior engineer applies automatically.
-
----
-
-## Who This Is For
-
-**VPs of Engineering** evaluating AI coding tools for team rollout. If your concern is that AI will help junior engineers ship faster while making the codebase harder for senior engineers to maintain, this pack is designed to address that directly.
-
-**Hiring Managers** building teams where AI assistance is the norm, not the exception. The skills in this pack encode the judgment that distinguishes senior engineers from junior ones. They are a forcing function, not a replacement for that judgment.
-
-**Staff and Principal Engineers** who are being asked to review AI-generated code and want to hold the tool to the same standards they hold their teammates to.
-
-**Engineering Managers** whose teams are seeing DORA metrics slip after adopting AI coding assistants and want a structural fix rather than a process mandate.
+| Skill | What It Enforces |
+|---|---|
+| `staff-architect` | Discovery pass + Architecture Decision Record before any code |
+| `surgical-strike` | Hard 3-file blast-radius limit, DORA-justified |
+| `dependency-audit` | License, CVE, maintenance health check before any install |
+| `migration-sentinel` | Lock analysis, down-migration, dual-write gate for schema changes |
+| `no-new-abstraction` | Rule of Three — 3 real call sites before any new abstraction |
+| `observability-gate` | Blocks completion without a log, a metric, and an alert stub |
+| `ownership-chain` | Forces team owner, runbook, and on-call rotation on new code |
+| `rfc-gate` | Triggers a written proposal for high-blast-radius changes |
+| `postmortem-check` | Scans for incident annotations before touching any file |
+| `breaking-change-detector` | Catches API/interface breaks and requires a migration path |
+| `/exec-summary` | Slash command: executive PR summary with honest debt assessment |
 
 ---
 
 ## Install
 
-Copy the `.claude` folder to any project root:
-
 ```bash
 cp -r .claude /path/to/your/project/
 ```
 
-That's it. Claude Code picks up skills from `.claude/skills/` automatically. The skills activate based on their `when_to_use` configuration.
-
-To use `/exec-summary`, type it as a slash command in any Claude Code session inside the project.
+Claude Code picks up skills from `.claude/skills/` automatically. Done.
 
 ---
 
-## Skills Overview
+## The DORA Connection
 
-| Skill | Trigger | What It Does |
-|-------|---------|--------------|
-| `staff-architect` | Any new feature, component, or service request | Discovery pass + Architecture Decision Record before any code |
-| `surgical-strike` | Every code change | Hard 3-file limit with DORA justification on violation |
-| `exec-summary` | `/exec-summary` slash command | Business Value + Honest Debt Assessment + Rollback Plan |
+These four metrics separate elite engineering teams from everyone else. Every skill in this pack maps to at least one of them.
+
+```
+Deployment Frequency    ← surgical-strike, no-new-abstraction
+Lead Time for Change    ← staff-architect, rfc-gate, breaking-change-detector
+Change Failure Rate     ← surgical-strike, migration-sentinel, postmortem-check
+Mean Time to Restore    ← observability-gate, ownership-chain, exec-summary
+```
+
+The `staff-architect` skill scores every proposed change against all four metrics before implementation begins. You get a GREEN / YELLOW / RED rating before a single line is written.
+
+---
+
+## Skill Highlights
+
+### `staff-architect` — Plan Before You Build
+
+Runs a full codebase discovery pass before any code is written. Outputs a **Strategic Architecture Decision Record** covering what already exists, what the change will cost, and what could go wrong. Ends with a DORA Impact Score.
+
+**Code is blocked until you approve the plan.**
+
+---
+
+### `surgical-strike` — 3 Files. Hard Stop.
+
+The research is clear: change size is the strongest predictor of deployment failures.
+
+If your request requires touching 4+ files, the agent stops, cites the CFR risk, and presents three scoped options. It does not start and ask partway through.
+
+---
+
+### `migration-sentinel` — Databases Are Not Reversible
+
+Before any schema change ships:
+
+- Lock duration estimated at current table size
+- Down-migration required or change is blocked
+- Dual-write strategy required for destructive operations
+- Data integrity verification query included
+
+`DROP TABLE` with no dual-write plan is a hard block.
+
+---
+
+### `postmortem-check` — Read the Warnings Before You Touch Anything
+
+Scans every file being modified for:
+
+- `// INCIDENT:` and `// POSTMORTEM:` annotations
+- `// DO NOT CHANGE` and `// WARNING:` comments
+- Any comment mentioning outage, deadlock, race condition, or timeout in a warning context
+
+If an annotation directly constrains the change, the agent stops and asks for explicit confirmation before proceeding.
+
+**The worst incidents are the ones that have happened before.**
+
+---
+
+### `no-new-abstraction` — Earn the Abstraction
+
+A new interface, base class, or shared utility requires three existing, real call sites. Not hypothetical ones.
+
+If the rule of three is not met, the agent implements inline and leaves a comment marking the extraction point for when the third real use case arrives.
+
+---
+
+### `observability-gate` — If It Can't Be Observed, It Isn't Done
+
+Every feature ships with:
+
+1. One structured log line at a meaningful event boundary
+2. One named metric with labels
+3. One alert condition stub (even if not yet wired to paging)
+
+Missing any one of the three: the feature is not complete.
+
+---
+
+### `/exec-summary` — PR Summaries That Executives Actually Use
+
+Slash command. Generates a PR summary with three sections that most PR descriptions skip:
+
+- **Business Value** — what metric moves, for which users, by how much
+- **Technical Debt Impact (Honest Assessment)** — required to contain at least one non-positive finding
+- **Rollback Plan** — exact steps, time to safe, data risk
+
+Formatted for VPs of Engineering and finance stakeholders, not for the engineer who wrote the code.
+
+---
+
+## Who This Is For
+
+**VPs of Engineering** evaluating AI coding tools for team rollout. If your concern is that AI will help juniors ship faster while making the codebase harder for seniors to maintain, this pack addresses that directly. Every skill encodes a constraint that senior engineers apply automatically.
+
+**Staff and Principal Engineers** who are being asked to review AI-generated code. Use this pack to hold the agent to the same bar you hold your teammates to.
+
+**Engineering Managers** whose DORA metrics have slipped since adopting AI coding assistants. This is a structural fix, not a process mandate.
+
+**Hiring Managers** building teams where AI assistance is standard. The skills here encode the judgment gap between junior and senior engineers. They are a forcing function, not a replacement.
+
+---
+
+## The Hidden Cost of Vibe Coding
+
+Vibe coding ships fast. The cost shows up six months later.
+
+- Utilities duplicated three times because the agent did not search before creating
+- Abstractions nobody can modify because they were never designed for change
+- Migrations that locked production for 45 minutes because nobody checked the table size
+- On-call incidents with no runbook because the feature shipped without an owner
+- Incidents re-opened because the agent edited around a `// INCIDENT:` comment it never read
+
+These are not hypothetical failure modes. They are the recurring postmortem themes at every organization that adopted AI coding at speed without installing guardrails.
+
+This pack is the guardrails.
 
 ---
 
 ## Contributing
 
-The skills in this pack encode specific opinions about how good engineering teams work. If your team has a different constraint that belongs here (test coverage floors, API contract enforcement, migration safety checks), open a PR. The format is documented in each `SKILL.md` file.
+Each skill encodes a specific opinion about how elite engineering teams work. If your team has a constraint that belongs here — test coverage floors, API contract enforcement, feature flag requirements — open a PR. The format is in each `SKILL.md` file.
 
 ---
 

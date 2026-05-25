@@ -49,9 +49,32 @@ What could go wrong, and how bad would it be?
 - Recommended safeguards before merging: [feature flag, shadow mode, canary, etc.]
 ```
 
-## Step 3: Wait for Confirmation
+## Step 3: Output a DORA Impact Score
 
-After outputting the ADR, pause. Ask the user to confirm the approach before proceeding to implementation. Do not write code speculatively.
+After the ADR, append a DORA scoring block that rates the proposed change across all four elite metrics:
+
+```
+## DORA Impact Score
+
+| Metric                  | Rating            | Reason                                      |
+|-------------------------|-------------------|---------------------------------------------|
+| Deployment Frequency    | LOW / MED / HIGH risk | [files changed, coupling, deploy complexity] |
+| Lead Time for Change    | LOW / MED / HIGH risk | [review surface area, test coverage, clarity] |
+| Change Failure Rate     | LOW / MED / HIGH risk | [blast radius, rollback complexity, test gaps] |
+| Mean Time to Restore    | LOW / MED / HIGH risk | [observability, rollback plan, on-call clarity] |
+
+**Overall risk rating:** GREEN / YELLOW / RED
+
+GREEN  = all four metrics LOW risk — safe to proceed
+YELLOW = one or two metrics at MED risk — proceed with named mitigations
+RED    = any metric at HIGH risk — do not proceed without explicit approval
+```
+
+Scoring must be honest. A GREEN rating where any metric is actually medium or high is a failure of this skill.
+
+## Step 4: Wait for Confirmation
+
+After outputting the ADR and DORA score, pause. Ask the user to confirm the approach before proceeding to implementation. Do not write code speculatively.
 
 ## Non-Negotiable Rules
 
