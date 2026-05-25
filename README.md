@@ -21,6 +21,22 @@ None of this shows up until your Change Failure Rate climbs, postmortems multipl
 
 ---
 
+## This will not blow up your context window or your bill
+
+The first question every senior engineer asks: "If I add 16 skills, does every prompt now cost $5?"
+
+No. Here is why.
+
+**Skills are lazy-loaded.** A skill file sits on disk doing nothing until its trigger condition is met. If you are writing a React component, `migration-sentinel` never loads. If you are not touching an API contract, `breaking-change-detector` stays quiet. You pay for exactly what fires.
+
+**Each skill is one markdown file.** When triggered, it adds roughly 500–800 tokens of instruction to the context. At current Sonnet pricing that is fractions of a cent. It costs more to ask Claude "what does this function do?" than to run most of these skills.
+
+**You control what you install.** See the [progressive enablement guide](#progressive-enablement) below. Starting with three skills is a valid production setup.
+
+The agent was already reading your codebase, your files, and your prompts. A skill that fires once per PR adds noise equivalent to a short code comment.
+
+---
+
 ## Skills by what goes wrong
 
 These are the complaints. Each one maps to skills that address the root cause.
