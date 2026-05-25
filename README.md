@@ -1,6 +1,8 @@
 # claude-staff-engineer
 
-Stop your AI agent from writing code it should not write.
+Claude Code is the agent. This is the harness.
+
+The enforcement layer that governs what your agent does before it writes a line — discovery passes, blast radius limits, postmortem checks, migration gates, observability requirements. The checks a Staff Engineer runs automatically. The ones your agent skips.
 
 ---
 
